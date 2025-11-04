@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.scheduledlinkmanager</groupId>
-	<artifactId>rules-service</artifactId>
+	<artifactId>comments-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>rules-service</name>
-	<description>Rules service</description>
+	<name>comments-service</name>
+	<description>Comments service</description>
 	<url/>
 	<licenses>
 		<license/>
