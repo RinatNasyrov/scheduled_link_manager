@@ -1,6 +1,7 @@
 package com.scheduledlinkmanager.rules_service.model;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -9,6 +10,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,8 +31,10 @@ public class Rule {
 
     private LocalDateTime startDate;
     private LocalDateTime endDate;
+    private LocalTime startTime;
+    private LocalTime endTime;
     private Long daysCount; // Будет не nullable потому, что размерность типа больше чем проживет наша цивилизация
-    private int weekDays; // Битовая маска - красиво
+    private Integer weekDays; // Битовая маска - красиво
     private Long routeCounter; // Вместо отдельной таблицы
 
     // Связь таблиц
@@ -39,13 +44,25 @@ public class Rule {
 
     // Методы для работы с битовой маской
     public boolean isDayEnabled(int dayOfWeek) {
-        return (weekDays & (1 << dayOfWeek)) != 0;
+        return (weekDays != null) && (weekDays & (1 << dayOfWeek)) != 0;
     }
     public void setDayEnabled(int dayOfWeek, boolean enabled) {
+        if (weekDays == null)
+            weekDays = 0;
+
         if (enabled) {
             weekDays |= (1 << dayOfWeek);
         } else {
             weekDays &= ~(1 << dayOfWeek);
+        }
+    }
+
+    @PrePersist
+    @PreUpdate
+    public void validateDateTimeData() {
+        if ((endTime != null && startTime != null && endTime.isBefore(startTime)) || 
+            (endDate != null && startDate != null && endDate.isBefore(startDate))) {
+            throw new IllegalStateException("Неверно заполнены поля дат или времени");
         }
     }
 }
