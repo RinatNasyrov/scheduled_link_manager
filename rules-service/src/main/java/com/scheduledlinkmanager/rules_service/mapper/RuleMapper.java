@@ -25,6 +25,7 @@ public class RuleMapper {
         rule.setEndTime(ruleDTO.getEndTime());
         rule.setDaysCount(ruleDTO.getDaysCount());
         rule.setRouteCounter(ruleDTO.getRouteCounter());
+        rule.setRouteURL(ruleDTO.getRouteURL());
 
         List<Boolean> weekDays = ruleDTO.getWeekDays();
         for (int i = 0; i < Math.min(WEEKDAYS_COUNT, weekDays.size()); i++) {
@@ -47,6 +48,7 @@ public class RuleMapper {
         ruleDTO.setEndTime(rule.getEndTime());
         ruleDTO.setDaysCount(rule.getDaysCount());
         ruleDTO.setRouteCounter(rule.getRouteCounter());
+        ruleDTO.setRouteURL(rule.getRouteURL());
 
         List<Boolean> weekDays = new ArrayList<>();
         for (int i = 0; i < WEEKDAYS_COUNT; i++) {

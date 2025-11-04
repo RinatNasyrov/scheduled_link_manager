@@ -20,4 +20,5 @@ public class RuleDTO {
     private Long daysCount;
     private List<Boolean> weekDays;
     private Long routeCounter;
+    private String routeURL;
 }
