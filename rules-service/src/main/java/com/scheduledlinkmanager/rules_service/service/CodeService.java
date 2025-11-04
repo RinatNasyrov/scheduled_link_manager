@@ -1,23 +1,31 @@
 package com.scheduledlinkmanager.rules_service.service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
 import com.scheduledlinkmanager.rules_service.dto.CodeDTO;
 import com.scheduledlinkmanager.rules_service.dto.RuleDTO;
+import com.scheduledlinkmanager.rules_service.mapper.RuleMapper;
 import com.scheduledlinkmanager.rules_service.model.Code;
 import com.scheduledlinkmanager.rules_service.model.Rule;
 import com.scheduledlinkmanager.rules_service.repository.CodeRepository;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class CodeService {
-
     private final CodeRepository codeRepository;
+    private final RuleMapper ruleMapper;
+
     public void createCode(CodeDTO codeDTO) {
+        if (codeDTO == null) 
+            return;
+        
         Code code = new Code();
 
         code.setId(codeDTO.getId());
@@ -30,7 +38,7 @@ public class CodeService {
 
         List<Rule> rules = codeDTO.getRules()
                                 .stream()
-                                .map(this::mapRuleFromDTO)
+                                .map(ruleMapper::ToEntity)
                                 .toList();
 
         rules.forEach(rule -> rule.setCode(code));
@@ -39,20 +47,66 @@ public class CodeService {
         codeRepository.save(code);
     }
 
-    public Rule mapRuleFromDTO(RuleDTO ruleDTO) {
-        Rule rule = new Rule();
+    public void deleteCode(UUID id) {
+        if (id != null)
+            codeRepository.deleteById(id);
+    }
 
-        rule.setId(ruleDTO.getId());
-        rule.setStartDate(ruleDTO.getStartDate());
-        rule.setEndDate(ruleDTO.getEndDate());
-        rule.setDaysCount(ruleDTO.getDaysCount());
-        rule.setRouteCounter(ruleDTO.getRouteCounter());
+    public CodeDTO getCode(UUID id) {
+        if (id == null)
+            return null;
 
-        List<Boolean> weekDays = ruleDTO.getWeekDays();
-        for (int i = 0; i < Math.min(7, weekDays.size()); i++) {
-            rule.setDayEnabled(i, weekDays.get(i));
+        Code code = codeRepository.getReferenceById(id);
+        CodeDTO codeDTO = new CodeDTO();
+        
+        try {
+            codeDTO.setId(code.getId());
+            codeDTO.setUserId(code.getUserId());
+            codeDTO.setTitle(code.getTitle());
+            codeDTO.setDescription(code.getDescription());
+            codeDTO.setIsPublic(code.getIsPublic());
+            codeDTO.setIsCommentable(code.getIsCommentable());
+            codeDTO.setIsSharedCounter(code.getIsSharedCounter());
+        } catch (EntityNotFoundException e) {
+            return null;
         }
 
-        return rule;
+        List<RuleDTO> rulesDTO = code.getRules()
+                                .stream()
+                                .map(ruleMapper::ToDTO)
+                                .toList();
+
+        codeDTO.setRules(rulesDTO);
+
+        return codeDTO;
+    }
+
+        public List<CodeDTO> getRandomCodes(int count) {
+        List<Code> codes = codeRepository.findRandomCodesEfficient(count);
+        List<CodeDTO> codeDTOs = new ArrayList<>();
+        CodeDTO codeDTO;
+        Code code;
+        for (int i = 0; i < codes.size(); i++)
+        {
+            code = codes.get(i);
+            codeDTO = new CodeDTO();
+            codeDTO.setId(code.getId());
+            codeDTO.setUserId(code.getUserId());
+            codeDTO.setTitle(code.getTitle());
+            codeDTO.setDescription(code.getDescription());
+            codeDTO.setIsPublic(code.getIsPublic());
+            codeDTO.setIsCommentable(code.getIsCommentable());
+            codeDTO.setIsSharedCounter(code.getIsSharedCounter());
+
+            List<RuleDTO> rulesDTO = code.getRules()
+                                    .stream()
+                                    .map(ruleMapper::ToDTO)
+                                    .toList();
+
+            codeDTO.setRules(rulesDTO);
+            codeDTOs.add(codeDTO);
+        }
+        
+        return codeDTOs;
     }
 }
