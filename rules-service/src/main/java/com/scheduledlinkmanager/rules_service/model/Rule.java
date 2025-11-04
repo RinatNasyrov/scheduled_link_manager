@@ -3,7 +3,10 @@ package com.scheduledlinkmanager.rules_service.model;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
+import org.springframework.data.annotation.CreatedDate;
+
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -36,6 +39,11 @@ public class Rule {
     private Long daysCount; // Будет не nullable потому, что размерность типа больше чем проживет наша цивилизация
     private Integer weekDays; // Битовая маска - красиво
     private Long routeCounter; // Вместо отдельной таблицы
+    private String routeURL;
+    @CreatedDate
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdDate; // Потом буду по нему сортировать, при поиске первого подходящего правила
+    
 
     // Связь таблиц
     @ManyToOne(cascade = CascadeType.PERSIST)
