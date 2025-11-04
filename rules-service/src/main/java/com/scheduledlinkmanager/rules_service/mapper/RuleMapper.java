@@ -21,6 +21,8 @@ public class RuleMapper {
         rule.setId(ruleDTO.getId());
         rule.setStartDate(ruleDTO.getStartDate());
         rule.setEndDate(ruleDTO.getEndDate());
+        rule.setStartTime(ruleDTO.getStartTime());
+        rule.setEndTime(ruleDTO.getEndTime());
         rule.setDaysCount(ruleDTO.getDaysCount());
         rule.setRouteCounter(ruleDTO.getRouteCounter());
 
@@ -41,6 +43,8 @@ public class RuleMapper {
         ruleDTO.setId(rule.getId());
         ruleDTO.setStartDate(rule.getStartDate());
         ruleDTO.setEndDate(rule.getEndDate());
+        ruleDTO.setStartTime(rule.getStartTime());
+        ruleDTO.setEndTime(rule.getEndTime());
         ruleDTO.setDaysCount(rule.getDaysCount());
         ruleDTO.setRouteCounter(rule.getRouteCounter());
 
